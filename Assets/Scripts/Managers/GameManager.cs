@@ -2,46 +2,56 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// 游戏总管理器，控制游戏流程和状态
+/// 数字博弈游戏总管理器，控制游戏流程和状态
 /// </summary>
 public class GameManager : Singleton<GameManager>
 {
     [Header("游戏设置")]
-    [SerializeField] private int maxHandSize = 5;
-    [SerializeField] private float turnTimeLimit = 30f;
+    [SerializeField] private float phaseTimeLimit = 60f; // 每个阶段的时间限制
+    [SerializeField] private int winConditionScore = 4; // 获胜所需积分
     
     [Header("玩家")]
-    [SerializeField] private HumanPlayer humanPlayer;
-    [SerializeField] private AIPlayer aiPlayer;
+    [SerializeField] private NumberPlayer humanPlayer;
+    [SerializeField] private NumberPlayer aiPlayer;
     
-    [Header("棋盘")]
-    [SerializeField] private BoardSlot[] boardSlots;
+    [Header("游戏区域")]
+    [SerializeField] private CardSlot[] handCardSlots; // A-I的9个手牌位置
+    [SerializeField] private Transform modifierCardArea; // 加减牌区域
+    [SerializeField] private Transform battleArea; // 比牌区域
+    [SerializeField] private Transform destroyedArea; // 销毁区域
     
-    // 游戏状态
-    public enum GameState
+    // 游戏阶段状态
+    public enum GamePhase
     {
-        MainMenu,
-        GameStart,
-        HumanTurn,
-        AITurn,
-        GameOver
+        MainMenu,           // 主菜单
+        GameStart,          // 游戏开始
+        CardPlacement,      // 摆牌阶段
+        ModifierPlacement,  // 放置加减牌阶段
+        CardReveal,         // 揭牌阶段
+        CardPlay,           // 出牌阶段
+        CardBattle,         // 比牌阶段
+        GameOver           // 游戏结束
     }
     
     [Header("游戏状态")]
-    [SerializeField] private GameState currentState = GameState.MainMenu;
+    [SerializeField] private GamePhase currentPhase = GamePhase.MainMenu;
+    [SerializeField] private int currentRound = 1;
+    [SerializeField] private GamePhaseManager phaseManager;
     
     // 事件
-    public System.Action<GameState> OnGameStateChanged;
-    public System.Action<Player> OnTurnChanged;
-    public System.Action<Player> OnGameOver;
+    public System.Action<GamePhase> OnGamePhaseChanged;
+    public System.Action<int> OnRoundChanged;
+    public System.Action<NumberPlayer> OnPlayerWin;
+    public System.Action OnGameDraw;
     
     // 属性
-    public GameState CurrentState => currentState;
-    public HumanPlayer HumanPlayer => humanPlayer;
-    public AIPlayer AIPlayer => aiPlayer;
-    public BoardSlot[] BoardSlots => boardSlots;
-    public int MaxHandSize => maxHandSize;
-    public float TurnTimeLimit => turnTimeLimit;
+    public GamePhase CurrentPhase => currentPhase;
+    public int CurrentRound => currentRound;
+    public NumberPlayer HumanPlayer => humanPlayer;
+    public NumberPlayer AIPlayer => aiPlayer;
+    public CardSlot[] HandCardSlots => handCardSlots;
+    public float PhaseTimeLimit => phaseTimeLimit;
+    public int WinConditionScore => winConditionScore;
     
     private void Start()
     {
