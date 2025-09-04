@@ -70,6 +70,17 @@ public class CardSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
             }
         }
         
+        // 设置槽位精灵
+        if (ResourceManager.Instance != null)
+        {
+            string slotTypeName = slotType.ToString().ToLower();
+            Sprite slotSprite = ResourceManager.Instance.GetSlotSprite(slotTypeName);
+            if (slotSprite != null)
+            {
+                slotRenderer.sprite = slotSprite;
+            }
+        }
+        
         // 确保有碰撞器
         if (GetComponent<Collider2D>() == null)
         {
@@ -190,6 +201,17 @@ public class CardSlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPoin
         
         // 添加背景
         SpriteRenderer cardRenderer = cardVisualObject.AddComponent<SpriteRenderer>();
+        
+        // 尝试获取卡牌精灵
+        if (ResourceManager.Instance != null)
+        {
+            Sprite cardSprite = ResourceManager.Instance.GetCardSprite(card.OriginalValue);
+            if (cardSprite != null)
+            {
+                cardRenderer.sprite = cardSprite;
+            }
+        }
+        
         cardRenderer.color = card.GetTeamColor();
         cardRenderer.sortingOrder = 1;
         

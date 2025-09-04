@@ -200,13 +200,30 @@ public class AudioManager : Singleton<AudioManager>
     /// <param name="soundName">音效名称</param>
     public void PlaySFX(string soundName)
     {
+        AudioClip clip = null;
+        
+        // 优先使用预设的音效
         if (soundEffects.ContainsKey(soundName))
         {
-            PlaySFX(soundEffects[soundName]);
+            clip = soundEffects[soundName];
+        }
+        // 如果没有预设音效，尝试从ResourceManager获取
+        else if (ResourceManager.Instance != null)
+        {
+            clip = ResourceManager.Instance.GetAudioClip(soundName);
+            if (clip != null)
+            {
+                Debug.Log($"从ResourceManager获取音效: {soundName}");
+            }
+        }
+        
+        if (clip != null)
+        {
+            PlaySFX(clip);
         }
         else
         {
-            Debug.LogWarning($"音效 '{soundName}' 未找到！");
+            Debug.LogWarning($"音效 '{soundName}' 未找到，已跳过播放");
         }
     }
     
