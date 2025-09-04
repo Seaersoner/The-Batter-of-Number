@@ -163,7 +163,7 @@ public class GamePhaseManager : MonoBehaviour
     private void HandleModifierPlacementPhase()
     {
         Debug.Log($"=== 第{currentRound}轮 - 放置加减牌阶段开始 ===");
-        Debug.log("每位玩家必须放置一张加牌和一张减牌");
+        Debug.Log("每位玩家必须放置一张加牌和一张减牌");
         
         StartCoroutine(HandleModifierPlacementCoroutine());
     }
