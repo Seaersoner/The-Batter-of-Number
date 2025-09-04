@@ -184,7 +184,16 @@ public class GamePhaseManager : MonoBehaviour
         // AI玩家放置加减牌
         Debug.Log("AI玩家放置加减牌...");
         var aiTargets = aiPlayer.AIDecideModifierTargets();
-        aiPlayer.PlaceModifierCards(aiTargets.addTarget, aiTargets.subtractTarget, currentRound);
+        
+        // 修复：检查AI决策结果
+        if (aiTargets.addTarget != null && aiTargets.subtractTarget != null)
+        {
+            aiPlayer.PlaceModifierCards(aiTargets.addTarget, aiTargets.subtractTarget, currentRound);
+        }
+        else
+        {
+            Debug.LogWarning("AI无法决策加减牌目标，跳过此阶段");
+        }
         
         yield return new WaitForSeconds(1f);
         
@@ -379,8 +388,8 @@ public class GamePhaseManager : MonoBehaviour
             return true;
         }
         
-        // 条件3：没有更多可用卡牌
-        if (humanPlayer.AvailableCards.Count == 0 || aiPlayer.AvailableCards.Count == 0)
+        // 条件3：双方都没有更多可用卡牌（修复：使用AND逻辑）
+        if (humanPlayer.AvailableCards.Count == 0 && aiPlayer.AvailableCards.Count == 0)
         {
             return true;
         }

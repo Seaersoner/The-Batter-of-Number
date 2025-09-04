@@ -101,14 +101,41 @@ public class NumberPlayer : MonoBehaviour
             handCards[randomIndex] = temp;
         }
         
-        // 重新分配卡牌ID
+        // 重新分配卡牌ID - 修复：保持卡牌状态
         string[] cardIds = { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
         for (int i = 0; i < handCards.Count; i++)
         {
-            // 这里需要通过反射或其他方式重新设置cardId
-            // 暂时通过重新创建卡牌来实现
             NumberCard oldCard = handCards[i];
-            handCards[i] = new NumberCard(oldCard.OriginalValue, cardIds[i], team);
+            // 创建新卡牌并保持当前状态
+            NumberCard newCard = new NumberCard(oldCard.OriginalValue, cardIds[i], team);
+            
+            // 保持当前数值（包括修饰符效果）
+            if (oldCard.CurrentValue != oldCard.OriginalValue)
+            {
+                int difference = oldCard.CurrentValue - oldCard.OriginalValue;
+                if (difference > 0)
+                {
+                    for (int j = 0; j < difference; j++)
+                    {
+                        newCard.ApplyAddition(1);
+                    }
+                }
+                else if (difference < 0)
+                {
+                    for (int j = 0; j < -difference; j++)
+                    {
+                        newCard.ApplySubtraction(1);
+                    }
+                }
+            }
+            
+            // 保持揭开状态
+            if (oldCard.IsRevealed)
+            {
+                newCard.Reveal();
+            }
+            
+            handCards[i] = newCard;
         }
         
         Debug.Log($"{playerName} 手牌已打乱");
@@ -386,9 +413,16 @@ public class NumberPlayer : MonoBehaviour
         
         List<NumberCard> availableCards = AvailableCards;
         
-        if (availableCards.Count < 2)
+        // 修复：检查是否有可用卡牌
+        if (availableCards.Count == 0)
         {
-            // 随机选择
+            Debug.LogWarning($"{playerName} 没有可用卡牌进行AI决策");
+            return (null, null);
+        }
+        
+        if (availableCards.Count == 1)
+        {
+            // 只有一张卡牌时，加减都选择同一张
             return (availableCards[0].CardId, availableCards[0].CardId);
         }
         
@@ -415,7 +449,12 @@ public class NumberPlayer : MonoBehaviour
         
         List<NumberCard> availableCards = AvailableCards;
         
-        if (availableCards.Count == 0) return null;
+        // 修复：添加空检查和详细日志
+        if (availableCards == null || availableCards.Count == 0)
+        {
+            Debug.LogWarning($"{playerName} AI无可用卡牌出牌");
+            return null;
+        }
         
         // 简单AI策略：选择数值最大的卡牌
         NumberCard bestCard = availableCards.OrderByDescending(card => card.CurrentValue).First();

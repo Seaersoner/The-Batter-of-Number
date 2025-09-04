@@ -131,7 +131,7 @@ public class ResourceManager : Singleton<ResourceManager>
         }
         
         texture.SetPixels(pixels);
-        texture.Apply();
+        texture.Apply(false, true); // 修复：标记为不可读以节省内存
         
         // 缓存纹理
         textureCache[$"card_texture_{number}"] = texture;
@@ -192,7 +192,7 @@ public class ResourceManager : Singleton<ResourceManager>
         }
         
         texture.SetPixels(pixels);
-        texture.Apply();
+        texture.Apply(false, true); // 修复：标记为不可读以节省内存
         
         return texture;
     }
