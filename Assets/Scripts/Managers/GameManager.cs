@@ -8,7 +8,7 @@ public class GameManager : Singleton<GameManager>
 {
     [Header("游戏设置")]
     [SerializeField] private float phaseTimeLimit = 60f; // 每个阶段的时间限制
-    [SerializeField] private int winConditionScore = 4; // 获胜所需积分
+    [SerializeField] private int winConditionScore = 5; // 获胜所需积分（率先赢下5局）
     
     [Header("玩家")]
     [SerializeField] private NumberPlayer humanPlayer;

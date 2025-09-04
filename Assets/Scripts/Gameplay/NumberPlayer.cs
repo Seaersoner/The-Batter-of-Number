@@ -27,6 +27,9 @@ public class NumberPlayer : MonoBehaviour
     private NumberCard selectedCardForPlay = null;     // 选择出牌的卡牌
     private bool hasPlacedModifiersThisRound = false;  // 本回合是否已放置加减牌
     
+    // 胜利记录（用于计算胜利点数和）
+    private List<int> winningCardValues = new List<int>(); // 记录每次胜利时出牌的数值
+    
     // 事件
     public System.Action<NumberPlayer> OnScoreChanged;
     public System.Action<NumberPlayer, NumberCard> OnCardPlayed;
@@ -241,6 +244,7 @@ public class NumberPlayer : MonoBehaviour
             case 1: // 胜利
                 roundsWon++;
                 currentScore++;
+                winningCardValues.Add(myCard.CurrentValue); // 记录胜利时的卡牌数值
                 Debug.Log($"{playerName} 胜利！{myCard}({myCard.CurrentValue}) > {opponentCard}({opponentCard.CurrentValue})");
                 
                 // 销毁对手卡牌
@@ -326,6 +330,24 @@ public class NumberPlayer : MonoBehaviour
     }
     
     /// <summary>
+    /// 计算胜利点数和（所有胜利卡牌的数值总和）
+    /// 根据游戏规则：点数和越小的胜利
+    /// </summary>
+    /// <returns>胜利点数和</returns>
+    public int CalculateWinPointsSum()
+    {
+        int winPointsSum = 0;
+        
+        foreach (int cardValue in winningCardValues)
+        {
+            winPointsSum += cardValue;
+        }
+        
+        Debug.Log($"{playerName} 胜利点数和：{winPointsSum} (胜利{roundsWon}局)");
+        return winPointsSum;
+    }
+    
+    /// <summary>
     /// 获取游戏统计信息
     /// </summary>
     /// <returns>统计信息字符串</returns>
@@ -345,6 +367,7 @@ public class NumberPlayer : MonoBehaviour
         roundsTied = 0;
         modifierCards.Clear();
         destroyedCards.Clear();
+        winningCardValues.Clear(); // 清理胜利记录
         selectedCardForPlay = null;
         hasPlacedModifiersThisRound = false;
         

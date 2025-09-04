@@ -367,8 +367,8 @@ public class GamePhaseManager : MonoBehaviour
     /// <returns>是否游戏结束</returns>
     private bool CheckGameEndConditions()
     {
-        // 条件1：有玩家达到4分
-        if (humanPlayer.CheckWinCondition(4) || aiPlayer.CheckWinCondition(4))
+        // 条件1：有玩家达到5分（率先赢下5局）
+        if (humanPlayer.CheckWinCondition(5) || aiPlayer.CheckWinCondition(5))
         {
             return true;
         }
@@ -436,26 +436,28 @@ public class GamePhaseManager : MonoBehaviour
     /// <returns>获胜的玩家，如果平局则返回null</returns>
     private NumberPlayer DetermineWinner()
     {
-        // 首先检查是否有玩家达到4分
-        if (humanPlayer.CurrentScore >= 4)
+        // 首先检查是否有玩家达到5分（率先赢下5局）
+        if (humanPlayer.CurrentScore >= 5)
         {
             return humanPlayer;
         }
         
-        if (aiPlayer.CurrentScore >= 4)
+        if (aiPlayer.CurrentScore >= 5)
         {
             return aiPlayer;
         }
         
-        // 如果都没有达到4分，比较最终分数（剩余卡牌总值）
-        int humanFinalScore = humanPlayer.CalculateFinalScore();
-        int aiFinalScore = aiPlayer.CalculateFinalScore();
+        // 如果都没有达到5分，比较胜利点数和（点数和越小的胜利）
+        int humanWinPointsSum = humanPlayer.CalculateWinPointsSum();
+        int aiWinPointsSum = aiPlayer.CalculateWinPointsSum();
         
-        if (humanFinalScore > aiFinalScore)
+        Debug.Log($"最终胜利点数和比较：人类 {humanWinPointsSum} vs AI {aiWinPointsSum}");
+        
+        if (humanWinPointsSum < aiWinPointsSum)
         {
             return humanPlayer;
         }
-        else if (aiFinalScore > humanFinalScore)
+        else if (aiWinPointsSum < humanWinPointsSum)
         {
             return aiPlayer;
         }
