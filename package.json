@@ -1,0 +1,26 @@
+{
+  "name": "com.seaersoner.battler-of-number",
+  "version": "1.0.0",
+  "displayName": "The Battler of Number Game",
+  "description": "数字博弈游戏完整代码包",
+  "unity": "2021.3",
+  "author": {
+    "name": "Seaersoner",
+    "email": "your-email@example.com"
+  },
+  "keywords": [
+    "game",
+    "card",
+    "strategy",
+    "number",
+    "battle"
+  ],
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Complete Game Setup",
+      "description": "完整的游戏场景设置示例",
+      "path": "Samples~/CompleteSetup"
+    }
+  ]
+}
